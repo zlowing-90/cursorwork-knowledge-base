@@ -63,6 +63,29 @@ source: 原始来源（钉钉链接/用户粘贴/etc）
 3. 在 `knowledge-base/00-index/INDEX.md` 对应表格中插入新行
 4. 如需重建完整索引，运行：`.cursor/hooks/rebuild-index.ps1`
 
+## 第五步：自动推送到 GitHub
+
+文档写入知识库、INDEX.md 更新完毕后，**必须**执行以下 git 操作将变更同步到 GitHub：
+
+```powershell
+cd e:\cursorwork
+git add .
+git commit -m "docs: 新增/更新知识文档 - {文档标题简述}"
+git push
+```
+
+**提交信息规范**（根据文档类型选择前缀）：
+
+| 文档类型 | commit 前缀 | 示例 |
+|----------|------------|------|
+| 新增文档 | `docs: 新增` | `docs: 新增 钉钉MCP使用指南提炼` |
+| 更新已有文档 | `docs: 更新` | `docs: 更新 INDEX.md 索引` |
+| 新增决策记录 | `adr: ` | `adr: ADR-001 选择钉钉MCP方案` |
+| 会议记录 | `meeting: ` | `meeting: 2026-06-27 周会纪要` |
+| 钉钉文档同步 | `sync: ` | `sync: 钉钉文档 MCP使用指南 v1.2` |
+
+> ⚠️ **注意**：`.cursor/mcp.json` 已在 `.gitignore` 中排除，不会被提交，敏感 key 不会泄漏。
+
 ## 避坑清单
 
 - [ ] 结论是否前置？（不能只有过程描述）
