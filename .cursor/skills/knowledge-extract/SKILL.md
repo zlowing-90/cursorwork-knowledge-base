@@ -63,7 +63,32 @@ source: 原始来源（钉钉链接/用户粘贴/etc）
 3. 在 `knowledge-base/00-index/INDEX.md` 对应表格中插入新行
 4. 如需重建完整索引，运行：`.cursor/hooks/rebuild-index.ps1`
 
-## 第五步：自动推送到 GitHub
+## 第五步（可选）：生成 HTML 可视化版本
+
+当提炼内容具有以下特征时，**调用 `html-effectiveness` 技能**生成对应 HTML 文件，作为 md 的视觉增强版：
+
+| 内容特征 | 适合的 HTML 模式 | 触发关键词 |
+|----------|-----------------|-----------|
+| 多方案对比、技术选型 | 并列对比（`compare`） | 对比、选型、方案A/B/C |
+| 项目复盘、阶段总结 | 状态报告（`status`） | 复盘、总结、里程碑 |
+| 事故/问题回顾 | 事后分析（`postmortem`） | 故障、事故、根因 |
+| 流程说明、架构设计 | 流程图（`flowchart`） | 流程、架构、步骤 |
+| 概念讲解、知识科普 | 交互讲解（`concept`） | 是什么、原理、怎么工作 |
+| 汇报材料、分享内容 | 幻灯片（`slides`） | 汇报、分享、演讲 |
+| 数据看板、指标追踪 | 仪表盘（`status`+KPI） | 数据、指标、KPI |
+
+**触发规则**：
+- 用户明确说"生成 HTML"/"做成网页"/"可视化"→ **必须**调用 html-effectiveness
+- 用户说"好看一点"/"漂亮的格式"→ **推荐**调用 html-effectiveness
+- 普通线性文字内容 → 保持 md，不强制生成 HTML
+
+**输出位置**：
+- 临时/一次性 HTML → `.agent-html/{主题}-{YYYYMMDD}.html`（已加入 .gitignore）
+- 长期保留的 HTML（汇报材料、设计文档等）→ 与对应 md 文件同目录，同名 `.html` 后缀
+
+**调用方式**：读取 `.cursor/skills/html-effectiveness/SKILL.md`，按其 Workflow 执行（Step 0→1→2→3→4）。参考模板文件在 `.agent-html/templates/`。
+
+## 第六步：自动推送到 GitHub
 
 文档写入知识库、INDEX.md 更新完毕后，**必须**执行以下 git 操作将变更同步到 GitHub：
 
