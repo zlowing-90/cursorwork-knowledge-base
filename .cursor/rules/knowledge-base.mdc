@@ -1,0 +1,61 @@
+---
+description: 知识库工作区使用规范，AI 在此工作区内应遵循的知识管理行为
+globs: ["**/*.md", "knowledge-base/**", "dingtalk-docs/**"]
+alwaysApply: true
+---
+
+# 知识库工作区规范
+
+## 工作区定位
+
+这是一个知识沉淀工作区，用于团队知识管理。核心目录：
+- `knowledge-base/` - 本地知识库（Markdown 文档）
+- `dingtalk-docs/` - 钉钉在线文档同步区
+
+## 可用技能
+
+- **knowledge-extract**（`.cursor/skills/knowledge-extract/`）：对任意文档自动选择最合适的提炼方法论（金字塔原理/GRAI/ORID/ECRS/KPT/费曼技巧等），输出结构化总结并存入知识库。用户说"帮我总结/提炼/复盘/整理"时自动读取并应用。
+
+## AI 行为准则
+
+### 回答问题时
+1. 优先在 `knowledge-base/` 和 `dingtalk-docs/` 中检索相关内容
+2. 引用知识库内容时，注明来源文件路径
+3. 如果钉钉 MCP 已配置，可直接查询钉钉文档内容
+
+### 内容提炼时
+1. 读取 `.cursor/skills/knowledge-extract/SKILL.md` 应用提炼技能
+2. 根据文档类型从 `.cursor/skills/knowledge-extract/methods.md` 选择对应方法论
+3. 从 `.cursor/skills/knowledge-extract/templates/` 选用对应输出模板
+
+### 新增知识时
+1. 根据内容类型放入对应目录：
+   - 项目相关 → `knowledge-base/01-projects/{项目名}/`
+   - 专题知识 → `knowledge-base/02-topics/`
+   - 会议记录 → `knowledge-base/03-meetings/`（文件名：`YYYY-MM-DD-主题.md`）
+   - 技术决策 → `knowledge-base/04-decisions/`（参考 ADR-TEMPLATE.md）
+   - 参考资料 → `knowledge-base/05-references/`
+2. 新增内容后，更新 `knowledge-base/00-index/INDEX.md` 中的对应索引表格
+
+### 文档格式规范
+- 所有文档使用 Markdown 格式，必须包含 YAML frontmatter（参见 auto-classify 规则）
+- 文件名使用中文或英文均可，避免空格（使用 `-` 连接）
+- 各类文档模板位置：
+  - 项目文档：`knowledge-base/01-projects/_PROJECT-TEMPLATE.md`
+  - 专题知识：`knowledge-base/02-topics/_TOPIC-TEMPLATE.md`
+  - 会议记录：`knowledge-base/03-meetings/MEETING-TEMPLATE.md`
+  - 决策记录：`knowledge-base/04-decisions/ADR-TEMPLATE.md`
+  - 参考资料：`knowledge-base/05-references/_REFERENCE-TEMPLATE.md`
+
+### 钉钉文档集成
+- 钉钉 MCP 配置位于 `.cursor/mcp.json`
+- 从钉钉同步的文档存放在 `dingtalk-docs/` 目录
+- 同步文档时保留原始文档标题和结构
+- 在 `knowledge-base/00-index/INDEX.md` 的钉钉文档表格中登记
+
+## 知识库维护
+
+- 定期检查并更新 `00-index/INDEX.md` 索引
+- 决策记录状态发生变化时及时更新 ADR 文件
+- 钉钉文档内容变更后重新同步
+- **批量重建索引**：执行 `.cursor\hooks\rebuild-index.ps1` 可扫描所有文件自动重建 INDEX.md
