@@ -401,6 +401,7 @@ Every artifact starts from this skeleton:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="张力">
 <title><!-- Descriptive title --></title>
 <style>
   :root {
@@ -469,8 +470,14 @@ Every artifact starts from this skeleton:
   <header>...</header>
   <!-- content -->
 </div>
+<footer style="margin-top: var(--gap-2xl); padding-top: var(--gap-md); border-top: 1px solid var(--border); color: var(--muted); font-size: var(--fs-meta); font-family: var(--font-body); display: flex; justify-content: space-between; align-items: center;">
+  <span>作者：张力</span>
+  <span>编写时间：<!-- 填入当前日期，如 2026-06-27 --></span>
+</footer>
 <script>
   // minimal interaction logic
+  // Auto-fill footer date
+  document.querySelector('footer span:last-child').textContent = '编写时间：' + new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
 </script>
 </body>
 </html>
@@ -534,6 +541,7 @@ transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease
 ## Anti-Patterns to Avoid (Hard Rules)
 
 ### P0 — Must Never Happen
+- **Don't** omit author and creation time — every artifact must include `<meta name="author" content="张力">` in `<head>` and a visible footer showing `作者：张力` + `编写时间：YYYY-MM-DD` (auto-filled via JS `new Date()`)
 - **Don't** use external CSS/JS files — everything must be inline
 - **Don't** use CDN libraries — no Bootstrap, no jQuery, no React
 - **Don't** use default browser styling — always reset and define

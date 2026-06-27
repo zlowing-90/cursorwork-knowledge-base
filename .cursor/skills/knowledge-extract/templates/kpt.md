@@ -4,6 +4,7 @@
 title: {{标题}}
 category: projects
 date: {{YYYY-MM-DD}}
+author: 张力
 tags: [KPT]
 extract-method: KPT
 status: active

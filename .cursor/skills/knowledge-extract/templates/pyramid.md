@@ -4,6 +4,7 @@
 title: {{标题}}
 category: {{topics|decisions|projects}}
 date: {{YYYY-MM-DD}}
+author: 张力
 tags: [金字塔原理]
 extract-method: 金字塔原理
 status: active

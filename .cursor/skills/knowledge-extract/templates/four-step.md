@@ -4,6 +4,7 @@
 title: {{标题}}
 category: topics
 date: {{YYYY-MM-DD}}
+author: 张力
 tags: [四步思维法]
 extract-method: 四步思维法
 status: active

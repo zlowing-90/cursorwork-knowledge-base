@@ -4,6 +4,7 @@
 title: {{标题}}
 category: topics
 date: {{YYYY-MM-DD}}
+author: 张力
 tags: [费曼技巧, 学习笔记]
 extract-method: 费曼技巧 + 四步思维法
 status: active

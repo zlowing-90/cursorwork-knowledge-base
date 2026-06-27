@@ -4,6 +4,7 @@
 title: {{标题}}
 category: meetings
 date: {{YYYY-MM-DD}}
+author: 张力
 tags: [ORID]
 extract-method: ORID
 status: active

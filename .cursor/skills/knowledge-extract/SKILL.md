@@ -46,6 +46,7 @@ description: 对任意文档（会议记录、项目复盘、技术文章、钉�
 title: 文档标题
 category: meetings | projects | topics | decisions | references
 date: YYYY-MM-DD
+author: 张力
 tags: [提炼方法, 领域标签]
 extract-method: GRAI | 金字塔原理 | ORID | ...
 status: active
