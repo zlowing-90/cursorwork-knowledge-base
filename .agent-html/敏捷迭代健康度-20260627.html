@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>敏捷迭代健康度 · 2026</title>
+<style>
+:root {
+  --bg:      #FAF9F5;
+  --surface: #FFFFFF;
+  --fg:      #141413;
+  --muted:   #87867F;
+  --border:  #D1CFC5;
+  --accent:  #D97757;
+  --accent-soft: color-mix(in oklch, var(--accent) 13%, transparent);
+  --fg-soft:     color-mix(in oklch, var(--fg) 6%, transparent);
+  --green:   #3D7A52;
+  --green-soft: color-mix(in oklch, #3D7A52 14%, transparent);
+  --red:     #B03838;
+  --red-soft:   color-mix(in oklch, #B03838 13%, transparent);
+  --amber:   #B87820;
+  --amber-soft: color-mix(in oklch, #B87820 14%, transparent);
+  --blue:    #3A6FA0;
+  --blue-soft:  color-mix(in oklch, #3A6FA0 14%, transparent);
+  --font-display: 'Iowan Old Style','Charter',Georgia,serif;
+  --font-body: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --font-mono: ui-monospace,'JetBrains Mono','SF Mono',Menlo,monospace;
+  --r: 10px; --r-pill: 999px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; font-family:var(--font-body); background:var(--bg); color:var(--fg); line-height:1.55; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+p, ul, li { margin:0; padding:0; list-style:none; }
+
+.page { max-width:1200px; margin:0 auto; padding:52px 28px 96px; }
+
+/* Header */
+.eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+h1 { font-family:var(--font-display); font-size:clamp(34px,5vw,56px); font-weight:500; letter-spacing:-.02em; margin:0 0 12px; }
+.header-meta { display:flex; gap:20px; flex-wrap:wrap; color:var(--muted); font-size:13px; margin-bottom:48px; }
+
+/* Section */
+.section { margin-bottom:56px; }
+.sec-head { display:flex; align-items:baseline; gap:10px; margin-bottom:20px; padding-bottom:12px; border-bottom:1.5px solid var(--border); }
+.sec-head h2 { font-family:var(--font-display); font-size:20px; font-weight:600; margin:0; }
+.sec-head .cnt { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+
+/* KPI strip */
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:40px; }
+.kpi { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:16px 18px; }
+.kpi-val { font-family:var(--font-display); font-size:30px; font-weight:500; line-height:1.1; margin-bottom:5px; }
+.kpi-lbl { font-size:11px; color:var(--muted); }
+.c-accent { color:var(--accent); } .c-green { color:var(--green); } .c-red { color:var(--red); } .c-blue { color:var(--blue); }
+
+/* Team cards */
+.team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; }
+.team-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:18px 20px; }
+.tc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.tc-name { font-size:15px; font-weight:600; }
+.tc-sm { font-size:12px; color:var(--muted); margin-top:2px; }
+.badge { font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:var(--r-pill); background:var(--accent-soft); color:var(--accent); }
+.tc-members { font-size:12px; color:var(--muted); line-height:1.5; }
+.tc-stats { display:flex; gap:12px; margin-top:12px; padding-top:12px; border-top:1px solid var(--fg-soft); }
+.tc-stat .v { font-family:var(--font-mono); font-size:16px; font-weight:500; }
+.tc-stat .l { font-size:10px; color:var(--muted); margin-top:1px; }
+
+/* Score system */
+.score-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:24px 26px; }
+.score-bar { display:flex; height:12px; border-radius:6px; overflow:hidden; gap:2px; margin-bottom:20px; }
+.score-seg { transition:flex .3s; }
+.score-cats { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:640px){.score-cats{grid-template-columns:1fr;}}
+.score-cat { border:1.5px solid var(--border); border-radius:8px; padding:14px 16px; }
+.sc-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.sc-title { font-size:13px; font-weight:600; }
+.sc-pts { font-family:var(--font-mono); font-size:18px; font-weight:500; color:var(--accent); }
+.sc-items { display:flex; flex-direction:column; gap:4px; }
+.sc-item { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
+.sc-item-pts { font-family:var(--font-mono); font-weight:500; color:var(--fg); }
+.sc-item-detail { font-size:11px; color:var(--muted); margin-top:2px; padding-left:8px; border-left:2px solid var(--border); line-height:1.6; }
+
+/* Score detail accordion */
+.sc-detail-toggle { cursor:pointer; font-size:11px; color:var(--accent); margin-top:6px; font-family:var(--font-mono); letter-spacing:.05em; }
+.sc-detail-body { display:none; margin-top:8px; }
+.sc-detail-body.open { display:block; }
+.detail-row { margin-bottom:10px; padding:10px 12px; background:var(--bg); border-radius:6px; border:1px solid var(--border); }
+.detail-row strong { display:block; font-size:12px; margin-bottom:4px; }
+.detail-row p { font-size:11px; color:var(--muted); line-height:1.6; }
+
+.thresholds { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--fg-soft); }
+.th-badge { font-family:var(--font-mono); font-size:11px; padding:4px 10px; border-radius:var(--r-pill); border:1.5px solid var(--border); }
+.th-pass { background:var(--green-soft); border-color:var(--green); color:var(--green); }
+.th-fail { background:var(--red-soft); border-color:var(--red); color:var(--red); }
+.th-warn { background:var(--amber-soft); border-color:var(--amber); color:var(--amber); }
+
+/* Health score chart */
+.chart-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:24px; overflow-x:auto; }
+.chart-inner { min-width:640px; }
+.bar-chart { display:flex; gap:8px; align-items:flex-end; height:220px; margin-bottom:8px; }
+.bar-group { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; min-width:60px; }
+.bar-group .iter-lbl { font-size:10px; color:var(--muted); text-align:center; line-height:1.3; }
+.bars { display:flex; gap:3px; align-items:flex-end; height:180px; }
+.bar { width:14px; border-radius:3px 3px 0 0; position:relative; transition:opacity .15s; cursor:default; }
+.bar:hover { opacity:.8; }
+.bar::after { content:attr(data-v); position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-family:var(--font-mono); font-size:9px; color:var(--muted); white-space:nowrap; }
+.chart-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; }
+.cl-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+.cl-dot { width:10px; height:10px; border-radius:2px; }
+
+/* Metrics table */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12px; background:var(--surface); }
+thead th { background:var(--fg-soft); padding:9px 12px; text-align:left; font-family:var(--font-mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+tbody tr { border-bottom:1px solid var(--fg-soft); }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--fg-soft); }
+td { padding:9px 12px; vertical-align:middle; }
+.chip { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:11px; font-weight:500; padding:2px 8px; border-radius:var(--r-pill); }
+.chip.pass { background:var(--green-soft); color:var(--green); }
+.chip.fail { background:var(--red-soft); color:var(--red); }
+.chip.warn { background:var(--amber-soft); color:var(--amber); }
+.chip.na { background:var(--fg-soft); color:var(--muted); }
+.chip.score { font-size:13px; font-weight:600; padding:4px 10px; }
+.chip.score-hi { background:var(--green-soft); color:var(--green); }
+.chip.score-md { background:var(--amber-soft); color:var(--amber); }
+.chip.score-lo { background:var(--red-soft); color:var(--red); }
+
+/* Filter */
+.filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.fb { font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; padding:5px 12px; border-radius:var(--r-pill); border:1.5px solid var(--border); background:var(--surface); color:var(--muted); cursor:pointer; transition:all .12s; }
+.fb:hover,.fb.on { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+
+/* Ranking table */
+.rank-table { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); overflow:hidden; }
+.rank-table table { border-radius:0; }
+.rank-row { display:grid; grid-template-columns:40px 100px 70px repeat(5,1fr) 80px; gap:0; }
+@media(max-width:900px){ .rank-row { grid-template-columns:32px 80px 60px repeat(5,1fr) 60px; } }
+.rh { background:var(--fg-soft); padding:9px 12px; font-family:var(--font-mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+.rh.center,.rc.center { text-align:center; }
+.rb { border-bottom:1px solid var(--fg-soft); }
+.rb:last-child { border-bottom:none; }
+.rc { padding:9px 12px; font-size:12px; vertical-align:middle; }
+.rank-num { font-family:var(--font-mono); font-size:18px; font-weight:600; color:var(--accent); }
+.pts-cell { display:flex; flex-direction:column; align-items:center; gap:2px; font-family:var(--font-mono); font-size:11px; }
+.pts-rank { color:var(--muted); font-size:10px; }
+.pts-score { font-weight:600; color:var(--fg); }
+.total-pts { font-family:var(--font-mono); font-size:16px; font-weight:600; color:var(--accent); }
+
+/* Iter summary cards */
+.iter-summaries { display:flex; flex-direction:column; gap:20px; }
+.iter-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); overflow:hidden; }
+.iter-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; cursor:pointer; }
+.iter-title { font-family:var(--font-display); font-size:16px; font-weight:600; }
+.iter-badge { font-family:var(--font-mono); font-size:10px; }
+.iter-toggle { margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+.iter-body { padding:16px 20px; display:none; }
+.iter-body.open { display:block; }
+.iter-summary { font-size:13px; color:var(--fg); line-height:1.7; margin-bottom:16px; white-space:pre-line; }
+.iter-teams { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; }
+.it-card { border:1.5px solid var(--border); border-radius:8px; padding:12px 14px; font-size:12px; }
+.it-card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-weight:600; }
+.it-analysis { font-size:11px; color:var(--muted); line-height:1.6; white-space:pre-line; }
+
+/* Issue cards */
+.issues-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+.issue-card { border-radius:8px; padding:14px 16px; border:1.5px solid; }
+.issue-card.red { border-color:var(--red); background:var(--red-soft); }
+.issue-card.amber { border-color:var(--amber); background:var(--amber-soft); }
+.issue-card.green { border-color:var(--green); background:var(--green-soft); }
+.issue-card.blue { border-color:var(--blue); background:var(--blue-soft); }
+.issue-label { font-family:var(--font-mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase; margin-bottom:6px; }
+.issue-card.red .issue-label { color:var(--red); }
+.issue-card.amber .issue-label { color:var(--amber); }
+.issue-card.green .issue-label { color:var(--green); }
+.issue-card.blue .issue-label { color:var(--blue); }
+.issue-title { font-weight:600; font-size:13px; margin-bottom:6px; }
+.issue-desc { font-size:12px; color:var(--muted); line-height:1.6; }
+
+/* Legend */
+.legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:10px; }
+.li { display:flex; align-items:center; gap:6px; }
+.ld { width:8px; height:8px; border-radius:50%; }
+.ld.pass { background:var(--green); } .ld.fail { background:var(--red); }
+.ld.warn { background:var(--amber); } .ld.na { background:var(--muted); }
+
+footer { margin-top:60px; padding-top:20px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+</style>
+</head>
+<body>
+<div class="page" data-od-id="root">
+
+<!-- ── 页眉 ── -->
+<div class="eyebrow">AGILE HEALTH · 敏捷迭代度量</div>
+<h1>敏捷迭代健康度 2026</h1>
+<div class="header-meta">
+  <span>覆盖周期：2026年 3月 — 5月</span>
+  <span>产线：EMAN · EMOM · EMDM · 一体化</span>
+  <span>满分：100 分制</span>
+  <span>数据来源：钉钉表格「敏捷迭代健康度」</span>
+</div>
+
+<!-- ── KPI 概览 ── -->
+<div class="kpi-grid" data-od-id="kpi">
+  <div class="kpi"><div class="kpi-val c-accent">6</div><div class="kpi-lbl">参与团队</div></div>
+  <div class="kpi"><div class="kpi-val c-accent">5</div><div class="kpi-lbl">正式迭代轮次</div></div>
+  <div class="kpi"><div class="kpi-val c-green">93</div><div class="kpi-lbl">最高健康度（严伟 3月）</div></div>
+  <div class="kpi"><div class="kpi-val c-red">57</div><div class="kpi-lbl">最低健康度（杨远康 4月SP2）</div></div>
+  <div class="kpi"><div class="kpi-val c-blue">87.0</div><div class="kpi-lbl">5月SP2 平均健康度</div></div>
+  <div class="kpi"><div class="kpi-val c-accent">+14.6</div><div class="kpi-lbl">5月SP2 较SP1 提升</div></div>
+</div>
+
+<!-- ── 团队构成 ── -->
+<section class="section" data-od-id="teams">
+  <div class="sec-head"><h2>团队构成</h2><span class="cnt">6 支团队 · 2026年配置</span></div>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">MBM 一组</div><div class="tc-sm">SM · 刘一</div></div>
+        <span class="badge">EMAN</span>
+      </div>
+      <div class="tc-members">开发：王亚龙、彭冲、王志、朱永杰<br>测试：别志鹏</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">6</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">312h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">384h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">MBM 二组</div><div class="tc-sm">SM · 张力</div></div>
+        <span class="badge">EMAN</span>
+      </div>
+      <div class="tc-members">开发：李康铭、汪正过、李星星<br>测试：宋琛晖</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">6</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">312h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">384h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">MBM 三组</div><div class="tc-sm">SM · 龙军</div></div>
+        <span class="badge">EMAN</span>
+      </div>
+      <div class="tc-members">开发：马万里、钟豪、徐剑<br>测试：胡文俊</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">4</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">208h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">256h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">重庆组</div><div class="tc-sm">SM · 余乐</div></div>
+        <span class="badge">EMOM</span>
+      </div>
+      <div class="tc-members">开发：林波、张乐、邓世友（谭偲、田海峰）<br>测试：林若飞</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">5</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">260h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">320h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">EMDM 组</div><div class="tc-sm">SM · 杨远康</div></div>
+        <span class="badge">EMDM</span>
+      </div>
+      <div class="tc-members">开发：程莉、黄子涵、祝建雄、海东<br>测试：徐玲</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">6</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">312h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">384h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="tc-top">
+        <div><div class="tc-name">一体化组</div><div class="tc-sm">SM · 严伟</div></div>
+        <span class="badge">一体化</span>
+      </div>
+      <div class="tc-members">开发：高雄、朱文胜<br>测试：丁蝶、陈子丹</div>
+      <div class="tc-stats">
+        <div class="tc-stat"><div class="v">5</div><div class="l">人数</div></div>
+        <div class="tc-stat"><div class="v">260h</div><div class="l">标准工时</div></div>
+        <div class="tc-stat"><div class="v">320h</div><div class="l">80%准入</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 评分标准 ── -->
+<section class="section" data-od-id="scoring">
+  <div class="sec-head"><h2>评分标准 2026</h2><span class="cnt">满分 100 分</span></div>
+  <div class="score-wrap">
+    <div class="score-bar">
+      <div class="score-seg" style="flex:15;background:#D97757"></div>
+      <div class="score-seg" style="flex:15;background:#C8693F"></div>
+      <div class="score-seg" style="flex:10;background:#B85A30"></div>
+      <div class="score-seg" style="flex:10;background:#3D7A52"></div>
+      <div class="score-seg" style="flex:10;background:#356B47"></div>
+      <div class="score-seg" style="flex:10;background:#2D5C3C"></div>
+      <div class="score-seg" style="flex:10;background:#254D31"></div>
+      <div class="score-seg" style="flex:20;background:#1A3D24"></div>
+    </div>
+    <div class="score-cats">
+      <div class="score-cat">
+        <div class="sc-head"><span class="sc-title">迭代过程管理</span><span class="sc-pts">40 分</span></div>
+        <div class="sc-items">
+          <div class="sc-item"><span>需求梳理和宣讲</span><span class="sc-item-pts">15分</span></div>
+          <div class="sc-item-detail">需求方案前置一个迭代就绪；描述规范、有业务背景/流程/功能点；充分澄清拆分（PSPS）；三方评审（需求梳理会）；宣讲会按时高效召开<br>检查：全检+抽查 · 迭代开始前周五</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>迭代计划和开发</span><span class="sc-item-pts">15分</span></div>
+          <div class="sc-item-detail">设计方案输出与评审；任务拆分有明确计划完成时间；每日晨/晚会进展对称；代码审查例行开展；测试用例输出评审；迭代测试报告（含结论和缺陷分析）<br>检查：抽查 · 迭代开发第二天</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>迭代演示和回顾</span><span class="sc-item-pts">10分</span></div>
+          <div class="sc-item-detail">需求通过验收、演示顺畅（有剧本和数据准备、无明显低级Bug）；回顾会有清晰改进目标和措施且有明显效果<br>检查：抽查 · 迭代后第二天</div>
+        </div>
+        <div class="sc-detail-toggle" onclick="toggleDetail(this)">▶ 评分规则详情</div>
+        <div class="sc-detail-body">
+          <div class="detail-row">
+            <strong>需求梳理评分规则</strong>
+            <p>① 需求总量 &lt; 80%团队总量 → 扣5分<br>② 需求描述缺少业务背景/流程/功能点说明/界面说明/标准工时 → 缺少每项扣1~5分<br>③ 无评审记录 → 执行情况得分扣2分<br>标准会议活动未执行 → 整项不得分；抽查小项不满足 → 单项扣3分</p>
+          </div>
+          <div class="detail-row">
+            <strong>迭代计划评分规则</strong>
+            <p>① 云效中需求未拆分 → 扣5分；部分未拆 → 扣3分<br>② 测试用例缺少一个 → 扣1分<br>③ 迭代报告缺少 → 扣5分；质量不高 → 扣1~3分<br>标准会议未执行 → 整项不得分；单项不满足 → 扣3分</p>
+          </div>
+          <div class="detail-row">
+            <strong>演示回顾评分规则</strong>
+            <p>① 演示/回顾会议未召开（无记录上传）→ 整项不得分<br>② 改进和坚持事项不明确 → 质量不高扣1~5分<br>抽查小项不满足 → 扣5分</p>
+          </div>
+        </div>
+      </div>
+      <div class="score-cat">
+        <div class="sc-head"><span class="sc-title">迭代度量</span><span class="sc-pts">60 分</span></div>
+        <div class="sc-items">
+          <div class="sc-item"><span>开发质量 · 客户质量</span><span class="sc-item-pts">10分</span></div>
+          <div class="sc-item-detail">EMAN每迭代客户缺陷数≤20个；MBM&EMDM线上线下Bug比≤20%；EMOM≤10%<br>检查：全检 · 迭代后第二天 · 达成10分，未达成0分</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>开发质量 · 人日Bug比</span><span class="sc-item-pts">10分</span></div>
+          <div class="sc-item-detail">开发缺陷数/开发完成需求标准评估工时 ≤ 0.8<br>检查：全检 · 迭代后第二天 · 达成10分，未达成0分</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>开发效率 · 有效产出</span><span class="sc-item-pts">10分</span></div>
+          <div class="sc-item-detail">实际完成需求标准总工时/实际出勤总工时 ≥ 65%<br>达成10分，未达成0分</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>开发效率 · 开发效率</span><span class="sc-item-pts">10分</span></div>
+          <div class="sc-item-detail">开发完成需求标准评估工时/实际投入工时 ≥ 1.0<br>达成10分，未达成0分</div>
+          <div style="height:8px"></div>
+          <div class="sc-item"><span>迭代目标达成率</span><span class="sc-item-pts">20分</span></div>
+          <div class="sc-item-detail">迭代内关闭需求数/迭代需求总数 = 100%<br>达成率 &lt; 70% → 0分；&lt; 100% → 扣10分</div>
+        </div>
+      </div>
+    </div>
+    <div class="thresholds">
+      <span class="th-badge th-pass">有效产出 ≥ 65%</span>
+      <span class="th-badge th-pass">开发效率 ≥ 1.0</span>
+      <span class="th-badge th-pass">目标达成率 = 100%</span>
+      <span class="th-badge th-pass">人日Bug比 ≤ 0.8</span>
+      <span class="th-badge th-fail">目标达成率 &lt; 70% → 0分</span>
+      <span class="th-badge th-warn">目标达成率 &lt; 100% → 扣10分</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 健康度趋势图 ── -->
+<section class="section" data-od-id="chart">
+  <div class="sec-head"><h2>健康度趋势</h2><span class="cnt">各团队逐迭代评分</span></div>
+  <div class="chart-wrap">
+    <div class="chart-inner">
+      <svg viewBox="0 0 900 240" style="width:100%;min-width:640px;display:block">
+        <!-- 网格线 & 基准线 -->
+        <line x1="60" y1="20" x2="880" y2="20" stroke="#E8E5DF" stroke-width="1"/>
+        <line x1="60" y1="57.5" x2="880" y2="57.5" stroke="#E8E5DF" stroke-width="1"/>
+        <line x1="60" y1="95" x2="880" y2="95" stroke="#E8E5DF" stroke-width="1"/>
+        <line x1="60" y1="132.5" x2="880" y2="132.5" stroke="#E8E5DF" stroke-width="1"/>
+        <line x1="60" y1="170" x2="880" y2="170" stroke="#E8E5DF" stroke-width="1"/>
+        <!-- 100线标注 -->
+        <text x="50" y="23" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#87867F">100</text>
+        <text x="50" y="60" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#87867F">90</text>
+        <text x="50" y="98" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#87867F">80</text>
+        <text x="50" y="135" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#87867F">70</text>
+        <text x="50" y="173" text-anchor="end" font-family="ui-monospace" font-size="10" fill="#87867F">60</text>
+        <!-- 60分基准虚线 -->
+        <line x1="60" y1="170" x2="880" y2="170" stroke="#B03838" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- X轴迭代标签 -->
+        <text x="175" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">3月SP1</text>
+        <text x="340" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">4月SP1</text>
+        <text x="505" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">4月SP2</text>
+        <text x="670" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">5月SP1*</text>
+        <text x="835" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">5月SP2</text>
+        <!-- 辅助函数：y = 170 - (score-60)*3.75 (60→170, 100→20) -->
+        <!-- 刘一: 81,80,78,?,79 -->
+        <polyline points="175,95 340,98.75 505,106.25 835,106.25" fill="none" stroke="#D97757" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="175" cy="95" r="4" fill="#D97757"/><circle cx="340" cy="98.75" r="4" fill="#D97757"/><circle cx="505" cy="106.25" r="4" fill="#D97757"/><circle cx="835" cy="106.25" r="4" fill="#D97757"/>
+        <!-- 张力: 70,62,76,?,94 -->
+        <polyline points="175,132.5 340,162.5 505,113.75 835,27.5" fill="none" stroke="#4C8B5E" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="175" cy="132.5" r="4" fill="#4C8B5E"/><circle cx="340" cy="162.5" r="4" fill="#4C8B5E"/><circle cx="505" cy="113.75" r="4" fill="#4C8B5E"/><circle cx="835" cy="27.5" r="4" fill="#4C8B5E"/>
+        <!-- 龙军: 78,75,90,?,92 -->
+        <polyline points="175,106.25 340,113.75 505,57.5 835,47.5" fill="none" stroke="#3A6FA0" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="175" cy="106.25" r="4" fill="#3A6FA0"/><circle cx="340" cy="113.75" r="4" fill="#3A6FA0"/><circle cx="505" cy="57.5" r="4" fill="#3A6FA0"/><circle cx="835" cy="47.5" r="4" fill="#3A6FA0"/>
+        <!-- 余乐: 60,62,76 -->
+        <polyline points="175,170 340,162.5 505,113.75" fill="none" stroke="#B87820" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6,3"/>
+        <circle cx="175" cy="170" r="4" fill="#B87820"/><circle cx="340" cy="162.5" r="4" fill="#B87820"/><circle cx="505" cy="113.75" r="4" fill="#B87820"/>
+        <!-- 杨远康: 63,70,57,?,83 -->
+        <polyline points="175,158.75 340,132.5 505,151.25 835,91.25" fill="none" stroke="#B03838" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="175" cy="158.75" r="4" fill="#B03838"/><circle cx="340" cy="132.5" r="4" fill="#B03838"/><circle cx="505" cy="151.25" r="4" fill="#B03838"/><circle cx="835" cy="91.25" r="4" fill="#B03838"/>
+        <!-- 严伟: 93,87,93,?,87 -->
+        <polyline points="175,28.75 340,58.75 505,28.75 835,58.75" fill="none" stroke="#6B5BAD" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="175" cy="28.75" r="4" fill="#6B5BAD"/><circle cx="340" cy="58.75" r="4" fill="#6B5BAD"/><circle cx="505" cy="28.75" r="4" fill="#6B5BAD"/><circle cx="835" cy="58.75" r="4" fill="#6B5BAD"/>
+      </svg>
+      <div class="chart-legend">
+        <div class="cl-item"><div class="cl-dot" style="background:#D97757"></div>刘一</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#4C8B5E"></div>张力</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#3A6FA0"></div>龙军</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#B87820;opacity:.7"></div>余乐（虚线=数据不完整）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#B03838"></div>杨远康</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#6B5BAD"></div>严伟</div>
+        <div style="font-size:11px;color:var(--muted);margin-left:auto">* 5月SP1 部分团队数据待录入</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 累计积分排名 ── -->
+<section class="section" data-od-id="ranking">
+  <div class="sec-head"><h2>团队累计积分排名</h2><span class="cnt">第1名6分 → 第6名1分 · 同分取名次分</span></div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:12px">特殊规则：未参与正式迭代（健康度=0且无度量数据）当期记【—】，累计积分不变。同产品双组合并统计时同分同名次。</div>
+  <div class="rank-table">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px">排名</th>
+          <th>产线</th>
+          <th>团队</th>
+          <th>3月SP1</th>
+          <th>4月SP1</th>
+          <th>4月SP2</th>
+          <th>5月SP1</th>
+          <th>5月SP2</th>
+          <th style="text-align:center">累计积分</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:20px;font-weight:600;color:var(--accent)">1</td>
+          <td>一体化</td>
+          <td style="font-weight:600">严伟</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">93分</span><span style="font-size:10px;color:var(--muted)">名次1 · 6分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">87分</span><span style="font-size:10px;color:var(--muted)">名次1 · 6分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">93分</span><span style="font-size:10px;color:var(--muted)">名次1 · 6分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">—</span><span style="font-size:10px;color:var(--muted)">名次1 · 6分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">87分</span><span style="font-size:10px;color:var(--muted)">名次3</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--accent)">30+</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:20px;font-weight:600;color:var(--accent)">2</td>
+          <td>EMAN</td>
+          <td style="font-weight:600">龙军</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">78分</span><span style="font-size:10px;color:var(--muted)">名次3 · 4分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">75分</span><span style="font-size:10px;color:var(--muted)">名次3 · 4分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">90分</span><span style="font-size:10px;color:var(--muted)">名次2 · 5分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">—</span><span style="font-size:10px;color:var(--muted)">名次2 · 5分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">92分</span><span style="font-size:10px;color:var(--muted)">名次2</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--accent)">23+</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">3</td>
+          <td>EMAN</td>
+          <td style="font-weight:600">刘一</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">81分</span><span style="font-size:10px;color:var(--muted)">名次2 · 5分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">80分</span><span style="font-size:10px;color:var(--muted)">名次2 · 5分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">78分</span><span style="font-size:10px;color:var(--muted)">名次3 · 4分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">—</span><span style="font-size:10px;color:var(--muted)">名次3 · 4分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">79分</span><span style="font-size:10px;color:var(--muted)">名次5</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">22+</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">4</td>
+          <td>EMAN</td>
+          <td style="font-weight:600">张力</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">70分</span><span style="font-size:10px;color:var(--muted)">名次4 · 3分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">62分</span><span style="font-size:10px;color:var(--muted)">名次5 · 2分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">76分</span><span style="font-size:10px;color:var(--muted)">名次4 · 3分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">—</span><span style="font-size:10px;color:var(--muted)">名次6 · 1分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">94分</span><span style="font-size:10px;color:var(--muted)">名次1</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">15+</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">5</td>
+          <td>EMDM</td>
+          <td style="font-weight:600">杨远康</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">63分</span><span style="font-size:10px;color:var(--muted)">名次5 · 2分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">70分</span><span style="font-size:10px;color:var(--muted)">名次4 · 3分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">57分</span><span style="font-size:10px;color:var(--muted)">名次6 · 1分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">—</span><span style="font-size:10px;color:var(--muted)">名次5 · 2分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip pass">83分</span><span style="font-size:10px;color:var(--muted)">名次4</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">12+</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">6</td>
+          <td>EMOM</td>
+          <td style="font-weight:600">余乐</td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">60分</span><span style="font-size:10px;color:var(--muted)">名次6 · 1分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip fail">62分</span><span style="font-size:10px;color:var(--muted)">名次5 · 2分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">76分</span><span style="font-size:10px;color:var(--muted)">名次4 · 3分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip warn">—</span><span style="font-size:10px;color:var(--muted)">名次4 · 3分</span></div></td>
+          <td><div style="display:flex;flex-direction:column;gap:2px"><span class="chip na">0分</span><span style="font-size:10px;color:var(--muted)">未参与 · —</span></div></td>
+          <td style="text-align:center;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--muted)">12</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 迭代度量明细 ── -->
+<section class="section" data-od-id="metrics">
+  <div class="sec-head"><h2>迭代度量明细</h2><span class="cnt">6项度量指标逐迭代对比</span></div>
+  <div class="legend">
+    <span class="li"><span class="ld pass"></span>达标</span>
+    <span class="li"><span class="ld warn"></span>接近警戒（±10%以内）</span>
+    <span class="li"><span class="ld fail"></span>未达标</span>
+    <span class="li"><span class="ld na"></span>数据缺失</span>
+  </div>
+  <div class="filter-bar" id="fb">
+    <button class="fb on" onclick="ft('all',this)">全部</button>
+    <button class="fb" onclick="ft('liu',this)">刘一</button>
+    <button class="fb" onclick="ft('zhang',this)">张力</button>
+    <button class="fb" onclick="ft('long',this)">龙军</button>
+    <button class="fb" onclick="ft('yu',this)">余乐</button>
+    <button class="fb" onclick="ft('yang',this)">杨远康</button>
+    <button class="fb" onclick="ft('yan',this)">严伟</button>
+  </div>
+  <div class="tbl-wrap">
+    <table id="mt">
+      <thead>
+        <tr>
+          <th>团队</th><th>迭代</th><th>健康度</th>
+          <th>有效产出<br><span style="font-weight:400;opacity:.7">≥65%</span></th>
+          <th>开发效率<br><span style="font-weight:400;opacity:.7">≥1.0</span></th>
+          <th>目标达成率<br><span style="font-weight:400;opacity:.7">=100%</span></th>
+          <th>人日Bug比<br><span style="font-weight:400;opacity:.7">≤0.8</span></th>
+          <th>计划按时率<br><span style="font-weight:400;opacity:.7">≥70%</span></th>
+          <th>核心问题摘要</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 刘一 -->
+        <tr data-t="liu"><td style="font-weight:600">刘一</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-md">81</span></td><td><span class="chip pass">75%</span></td><td><span class="chip pass">1.31</span></td><td><span class="chip warn">81%</span></td><td><span class="chip na">—</span></td><td><span class="chip warn">68%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">业务需求输出不及时；演示会未召开</td></tr>
+        <tr data-t="liu"><td style="font-weight:600">刘一</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-md">80</span></td><td><span class="chip pass">85%</span></td><td><span class="chip pass">1.29</span></td><td><span class="chip fail">54%</span></td><td><span class="chip pass">0.03</span></td><td><span class="chip pass">71%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">需求准备率仅54%；迭代目标达成率低</td></tr>
+        <tr data-t="liu"><td style="font-weight:600">刘一</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-md">78</span></td><td><span class="chip pass">68%</span></td><td><span class="chip pass">1.49</span></td><td><span class="chip warn">87%</span></td><td><span class="chip fail">2.30</span></td><td><span class="chip fail">58%</span></td><td style="font-size:11px;color:var(--red);font-weight:600;max-width:200px;white-space:normal">BUG比从0.03飙升至2.30 ⚠ 需重点复盘</td></tr>
+        <tr data-t="liu"><td style="font-weight:600">刘一</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip score score-md">79</span></td><td><span class="chip pass">76%</span></td><td><span class="chip pass">1.35</span></td><td><span class="chip pass">100%</span></td><td><span class="chip pass">0.16</span></td><td><span class="chip pass">82%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">BUG比恢复；目标达成率100%；演示回顾未召开</td></tr>
+        <!-- 张力 -->
+        <tr data-t="zhang"><td style="font-weight:600">张力</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-md">70</span></td><td><span class="chip pass">83%</span></td><td><span class="chip pass">1.04</span></td><td><span class="chip pass">100%</span></td><td><span class="chip na">—</span></td><td><span class="chip fail">55%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">需求输入量不足；演示回顾会未召开</td></tr>
+        <tr data-t="zhang"><td style="font-weight:600">张力</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-lo">62</span></td><td><span class="chip fail">64%</span></td><td><span class="chip fail">0.80</span></td><td><span class="chip pass">100%</span></td><td><span class="chip fail">1.43</span></td><td><span class="chip fail">58%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">PDA平台组件缺失制约效率；BUG比超标79%</td></tr>
+        <tr data-t="zhang"><td style="font-weight:600">张力</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-md">76</span></td><td><span class="chip pass">72%</span></td><td><span class="chip warn">0.98</span></td><td><span class="chip fail">72%</span></td><td><span class="chip pass">0.61</span></td><td><span class="chip pass">82%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">BUG比恢复达标；目标达成率回落至72%</td></tr>
+        <tr data-t="zhang"><td style="font-weight:600">张力</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip score score-hi">94</span></td><td><span class="chip pass">135%</span></td><td><span class="chip pass">1.83</span></td><td><span class="chip pass">100%</span></td><td><span class="chip pass">0.49</span></td><td><span class="chip pass">95%</span></td><td style="font-size:11px;color:var(--amber);max-width:200px;white-space:normal">全组第一↑+40；效率数据异常偏高，需复核口径</td></tr>
+        <!-- 龙军 -->
+        <tr data-t="long"><td style="font-weight:600">龙军</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-md">78</span></td><td><span class="chip pass">74%</span></td><td><span class="chip pass">1.20</span></td><td><span class="chip warn">90%</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">需求外工作量占44.9%；演示回顾会延时召开</td></tr>
+        <tr data-t="long"><td style="font-weight:600">龙军</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-md">75</span></td><td><span class="chip pass">83%</span></td><td><span class="chip pass">1.13</span></td><td><span class="chip pass">100%</span></td><td><span class="chip fail">1.37</span></td><td><span class="chip fail">39%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">BUG比超标71%；任务计划率63%；按时执行率39%</td></tr>
+        <tr data-t="long"><td style="font-weight:600">龙军</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-hi">90</span></td><td><span class="chip pass">70%</span></td><td><span class="chip pass">1.15</span></td><td><span class="chip warn">89%</span></td><td><span class="chip pass">0.60</span></td><td><span class="chip fail">58%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">BUG比大幅改善；按时率初步改善至58%</td></tr>
+        <tr data-t="long"><td style="font-weight:600">龙军</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip score score-hi">92</span></td><td><span class="chip pass">70%</span></td><td><span class="chip pass">1.70</span></td><td><span class="chip pass">100%</span></td><td><span class="chip pass">0.53</span></td><td><span class="chip pass">75%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">连续保持90+；需求变更率50%仍偏高</td></tr>
+        <!-- 余乐 -->
+        <tr data-t="yu"><td style="font-weight:600">余乐</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-lo">60</span></td><td><span class="chip pass">79%</span></td><td><span class="chip pass">1.03</span></td><td><span class="chip pass">100%</span></td><td><span class="chip fail">1.30</span></td><td><span class="chip fail">42%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">需求细节模糊反复沟通；迭代未结束未召开演示/回顾会</td></tr>
+        <tr data-t="yu"><td style="font-weight:600">余乐</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-lo">62</span></td><td><span class="chip fail">64%</span></td><td><span class="chip fail">0.80</span></td><td><span class="chip pass">100%</span></td><td><span class="chip fail">1.43</span></td><td><span class="chip fail">58%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">与张力组同问题：PDA平台依赖；BUG连续超标</td></tr>
+        <tr data-t="yu"><td style="font-weight:600">余乐</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-md">76</span></td><td><span class="chip pass">72%</span></td><td><span class="chip warn">0.98</span></td><td><span class="chip fail">72%</span></td><td><span class="chip pass">0.61</span></td><td><span class="chip pass">82%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">整体改善；PDA组件依赖缓解</td></tr>
+        <tr data-t="yu"><td style="font-weight:600">余乐</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip na">未参与</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">投入中电爱华项目，本迭代不参与度量</td></tr>
+        <!-- 杨远康 -->
+        <tr data-t="yang"><td style="font-weight:600">杨远康</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-lo">63</span></td><td><span class="chip fail">42%</span></td><td><span class="chip pass">1.06</span></td><td><span class="chip fail">58%</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">需求管理失控；有效产出全组最低；演示无记录</td></tr>
+        <tr data-t="yang"><td style="font-weight:600">杨远康</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-md">70</span></td><td><span class="chip pass">74%</span></td><td><span class="chip pass">1.17</span></td><td><span class="chip fail">57%</span></td><td><span class="chip fail">1.71</span></td><td><span class="chip fail">61%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">BUG比全组最高1.71；目标达成率连续低位</td></tr>
+        <tr data-t="yang"><td style="font-weight:600">杨远康</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-lo">57</span></td><td><span class="chip fail">50%</span></td><td><span class="chip pass">1.10</span></td><td><span class="chip fail">40%</span></td><td><span class="chip fail">1.40</span></td><td><span class="chip fail">30%</span></td><td style="font-size:11px;color:var(--red);font-weight:600;max-width:200px;white-space:normal">全组最低 ⚠ 所有指标亮红灯，需强干预</td></tr>
+        <tr data-t="yang"><td style="font-weight:600">杨远康</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip score score-md">83</span></td><td><span class="chip pass">86%</span></td><td><span class="chip pass">1.31</span></td><td><span class="chip warn">90%</span></td><td><span class="chip pass">0.63</span></td><td><span class="chip fail">39%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">大幅反弹+27；但计划按时率39%仍低，报告缺失</td></tr>
+        <!-- 严伟 -->
+        <tr data-t="yan"><td style="font-weight:600">严伟</td><td style="color:var(--muted);font-size:11px">3月SP1</td><td><span class="chip score score-hi">93</span></td><td><span class="chip pass">77%</span></td><td><span class="chip pass">1.21</span></td><td><span class="chip pass">100%</span></td><td><span class="chip na">—</span></td><td><span class="chip na">—</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">演示回顾召开但问题分析不清晰</td></tr>
+        <tr data-t="yan"><td style="font-weight:600">严伟</td><td style="color:var(--muted);font-size:11px">4月SP1</td><td><span class="chip score score-md">87</span></td><td><span class="chip pass">91%</span></td><td><span class="chip warn">0.84</span></td><td><span class="chip pass">100%</span></td><td><span class="chip pass">0.06</span></td><td><span class="chip pass">82%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">开发效率0.84低于标准；产出全组最高，BUG接近零缺陷</td></tr>
+        <tr data-t="yan"><td style="font-weight:600">严伟</td><td style="color:var(--muted);font-size:11px">4月SP2</td><td><span class="chip score score-hi">93</span></td><td><span class="chip pass">74%</span></td><td><span class="chip pass">1.22</span></td><td><span class="chip warn">91%</span></td><td><span class="chip pass">0.08</span></td><td><span class="chip pass">72%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">回升至全组最高；BUG连续接近零缺陷</td></tr>
+        <tr data-t="yan"><td style="font-weight:600">严伟</td><td style="color:var(--muted);font-size:11px">5月SP2</td><td><span class="chip score score-md">87</span></td><td><span class="chip pass">81%</span></td><td><span class="chip pass">1.45</span></td><td><span class="chip warn">90%</span></td><td><span class="chip pass">0.19</span></td><td><span class="chip fail">63%</span></td><td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">轻微回落-5；需求变更率67%异常偏高</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 迭代小结 ── -->
+<section class="section" data-od-id="summaries">
+  <div class="sec-head"><h2>迭代分析报告摘要</h2><span class="cnt">点击展开各迭代详情</span></div>
+  <div class="iter-summaries">
+
+    <div class="iter-card">
+      <div class="iter-header" onclick="toggleIter(this)">
+        <span class="badge" style="background:var(--fg-soft);color:var(--muted)">3月 SP1</span>
+        <span class="iter-title">3月迭代质量分析报告</span>
+        <span class="iter-toggle">▶ 展开</span>
+      </div>
+      <div class="iter-body">
+        <div class="iter-summary">一、需求管理失控
+1. 需求就绪度不足，迭代开始时纳入量不足，过程中持续加入（MBM、一体化）
+2. 需求未按标准输出，内容不完整，导致过程中大量反复沟通和澄清（EMOM）
+3. 需求优先级管理失控，多个需求过程中插入或移出，重要客户需求未及时纳入（EMDM）
+
+二、迭代计划与执行脱节，进度管控失效
+1. 迭代任务按计划完成率不足60%，大量任务延期
+2. 迭代目标达成率偏低，仅两个组100%达成（张力/余乐/严伟）
+
+三、迭代演示和回顾会执行较差
+1. 多个小组未按要求召开
+2. 会议未记录过程并形成清晰的结果/结论输出</div>
+        <div class="iter-teams">
+          <div class="it-card"><div class="it-card-head"><span>刘一</span><span class="chip score score-md">81分</span></div><div class="it-analysis">• 业务需求输出不及时，优先安排技术类需求
+• 演示会未正常召开
+• 任务按计划完成率68%，需求按时关闭率81%</div></div>
+          <div class="it-card"><div class="it-card-head"><span>张力</span><span class="chip score score-md">70分</span></div><div class="it-analysis">• 迭代需求输入量不足
+• 任务按计划完成率55%，超时45%
+• 演示回顾会未召开（接口开发无法功能演示）</div></div>
+          <div class="it-card"><div class="it-card-head"><span>龙军</span><span class="chip score score-md">78分</span></div><div class="it-analysis">• 任务达成率65%，超时11%，24%无计划
+• 演示回顾会延时召开
+• 需求外工作量占比44.9%，有效产出被严重占用</div></div>
+          <div class="it-card"><div class="it-card-head"><span>余乐</span><span class="chip score score-lo">60分</span></div><div class="it-analysis">• 需求细节模糊，开发反复沟通，方案设计滞后
+• 仅42%任务按计划执行
+• 迭代未结束无法演示，未召开回顾会
+• BUG比1.30超标</div></div>
+          <div class="it-card"><div class="it-card-head"><span>杨远康</span><span class="chip score score-lo">63分</span></div><div class="it-analysis">• 需求管理失控，多个需求过程中插入/移出
+• 有效产出率仅40%，全组最低
+• 演示回顾会召开但无清晰记录和结论
+• 目标达成率58%，大量需求在迭代外才关闭</div></div>
+          <div class="it-card"><div class="it-card-head"><span>严伟</span><span class="chip score score-hi">93分</span></div><div class="it-analysis">• 迭代开始时需求输入不饱满，过程中补入
+• 演示回顾会召开，但问题分析和改进结论不清晰
+• 综合指标全组最优</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="iter-card">
+      <div class="iter-header" onclick="toggleIter(this)">
+        <span class="badge" style="background:var(--fg-soft);color:var(--muted)">4月 SP1</span>
+        <span class="iter-title">4月SP1质量分析报告</span>
+        <span class="iter-toggle">▶ 展开</span>
+      </div>
+      <div class="iter-body">
+        <div class="iter-summary">一、开发质量显著变差
+1. 4个团队开发人日BUG比超标（余乐&张力1.43、杨远康1.71、龙军1.37），仅刘一（0.03）和严伟（0.06）达标
+2. 较3月SP1由2个团队超标扩大至4个，BUG率均值从0.60升至0.84
+
+二、需求规划与迭代计划执行脱节
+1. MBM产品线需求规划输出滞后，刘一组需求准备率仅54%，龙军组21%计划外需求
+2. 龙军组任务计划率仅63%、按时执行率39%；杨远康组计划执行率61%
+
+三、平台依赖制约效率
+1. 张力/余乐组受限于PDA端平台组件缺失，开发效率仅0.80，有效产出64.42%
+
+四、改进点
+1. 杨远康组有效产出从42%提升至74.21%（+32pp），健康度从63提升至70
+2. 严伟组有效产出90.50%全组最高，BUG比0.06接近零缺陷
+3. 演示回顾会全部正常召开，较3月SP1明显改善</div>
+        <div class="iter-teams">
+          <div class="it-card"><div class="it-card-head"><span>刘一</span><span class="chip score score-md">80分</span></div><div class="it-analysis">• 需求准备率仅54%，目标达成率54%
+• 任务按时执行率71%
+• 开发质量佳（BUG比0.03）</div></div>
+          <div class="it-card"><div class="it-card-head"><span>张力</span><span class="chip score score-lo">62分</span></div><div class="it-analysis">• PDA平台组件缺失制约效率
+• BUG比1.43超标79%
+• 有效产出64%未达标；开发效率0.80</div></div>
+          <div class="it-card"><div class="it-card-head"><span>龙军</span><span class="chip score score-md">75分</span></div><div class="it-analysis">• 任务计划率63%，按时执行率39%
+• BUG比1.37超标71%
+• 21%计划外需求</div></div>
+          <div class="it-card"><div class="it-card-head"><span>余乐</span><span class="chip score score-lo">62分</span></div><div class="it-analysis">• PDA平台组件缺失（同张力组）
+• BUG比1.43连续超标
+• 有效产出和开发效率均未达标</div></div>
+          <div class="it-card"><div class="it-card-head"><span>杨远康</span><span class="chip score score-md">70分</span></div><div class="it-analysis">• BUG比1.71全组最高
+• 目标达成率57%，连续两迭代未达标
+• 50%以上任务未按时达成</div></div>
+          <div class="it-card"><div class="it-card-head"><span>严伟</span><span class="chip score score-md">87分</span></div><div class="it-analysis">• 开发效率0.84低于标准
+• 健康度从93降至87
+• 亮点：产出最高，BUG比0.06接近零缺陷</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="iter-card">
+      <div class="iter-header" onclick="toggleIter(this)">
+        <span class="badge" style="background:var(--fg-soft);color:var(--muted)">4月 SP2</span>
+        <span class="iter-title">4月SP2质量分析报告</span>
+        <span class="iter-toggle">▶ 展开</span>
+      </div>
+      <div class="iter-body">
+        <div class="iter-summary">一、整体表现回升
+1. 平均迭代健康度从72.7提升至78.3（+5.6），龙军（75→90）、余乐（62→76）、张力（62→76）提升≥14分，严伟重回最高分93
+2. 4月SP1集中暴发的开发质量问题大面积修复：张力（1.43→0.61）、余乐（1.43→0.61）、龙军（1.37→0.60）BUG比恢复达标
+3. PDA端开发效率明显回暖：张力&余乐组效率从0.80回升至0.98，有效产出从64%提升至71.72%
+
+二、共性问题：迭代目标按时关闭率普遍下滑
+1. 除张力组外，5个团队目标达成率均出现回落
+2. 需求变更率普遍偏高：刘一63%、张力&余乐56%、龙军33%，仅严伟5%达标
+3. 计划任务按时执行率仍是短板：刘一58%、龙军58%、杨远康30%未达70%
+
+三、个别团队核心问题
+1. 刘一组开发质量断崖恶化：BUG比从0.03飙升至2.30（+2.27），需重点复盘
+2. 杨远康组连续两迭代下滑：健康度70→57（全组最低），全部度量维度亮红灯，已到必须强干预临界状态
+
+四、改进点
+1. PDA开发瓶颈缓解：张力/余乐组恢复达标状态
+2. 龙军组任务按时执行率从39%提升至58%（+19pp）
+3. 演示与回顾会全部正常召开，过程合规性持续向好</div>
+        <div class="iter-teams">
+          <div class="it-card"><div class="it-card-head"><span>刘一</span><span class="chip score score-md">78分↓</span></div><div class="it-analysis">• BUG比2.30全组最高 ⚠ 严重恶化
+• 开发效率1.49全组第一
+• 目标达成率87%较4月SP1大幅回升</div></div>
+          <div class="it-card"><div class="it-card-head"><span>张力</span><span class="chip score score-md">76分↑</span></div><div class="it-analysis">• BUG比1.43→0.61，恢复达标
+• 开发效率0.80→0.98，任务按时58%→82%
+• 目标达成率从100%降至72%</div></div>
+          <div class="it-card"><div class="it-card-head"><span>龙军</span><span class="chip score score-hi">90分↑</span></div><div class="it-analysis">• 重大改善+15，BUG比1.37→0.60
+• 迭代计划率100%显著改善
+• 有效产出83%→70%略有回落</div></div>
+          <div class="it-card"><div class="it-card-head"><span>余乐</span><span class="chip score score-md">76分↑</span></div><div class="it-analysis">• 与张力组趋势一致+14
+• BUG比1.43→0.61，开发效率0.80→0.98
+• 目标达成率100%→72%</div></div>
+          <div class="it-card" style="border-color:var(--red)"><div class="it-card-head"><span>杨远康</span><span class="chip score score-lo">57分↓ ⚠</span></div><div class="it-analysis" style="color:var(--red)">• 全组最低，所有指标全面亮红灯
+• 有效产出74%→50%，目标达成57%→40%
+• 任务按时执行率61%→30%，需强干预</div></div>
+          <div class="it-card"><div class="it-card-head"><span>严伟</span><span class="chip score score-hi">93分↑</span></div><div class="it-analysis">• 重回全组最高，BUG比0.08近零缺陷
+• 开发效率0.84→1.22恢复
+• 有效产出91%→73.69%略有回落</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="iter-card">
+      <div class="iter-header" onclick="toggleIter(this)">
+        <span class="badge" style="background:var(--accent-soft);color:var(--accent)">5月 SP2</span>
+        <span class="iter-title">5月SP2质量分析报告 · 最新</span>
+        <span class="iter-toggle">▶ 展开</span>
+      </div>
+      <div class="iter-body">
+        <div class="iter-summary">一、整体表现显著回升
+1. 5个正式参与团队平均健康度约87.0，较5月SP1（72.4）提升+14.6，较4月SP2（78.3）提升+8.7
+2. 张力组（54→94，+40）和杨远康组（56→83，+27）改善幅度最大；龙军（89→92）、刘一（71→79）稳步提升
+3. 开发质量全面达标：所有团队BUG比均≤0.8（最高杨远康0.63），刘一组从4月SP2的2.30恢复至0.16
+4. 迭代目标达成率明显好转：刘一/张力/龙军三组达100%按时关闭
+
+二、共性问题：需求规划稳定性仍不足
+1. 4个团队需求变更率偏高：刘一67%、严伟67%、龙军50%、张力35%（仅杨远康14%达标）
+2. 演示回顾会执行待完善：刘一组得0分；杨远康组有开回顾会（AI听记）得5分，未达满分
+3. 计划任务按时执行率分化：张力95%、龙军75%、刘一82%较好；严伟63%、杨远康39%未达70%
+
+三、个别团队核心问题
+1. 余乐组本迭代未参与正式迭代，投入项目支持，当期积分记【—】
+2. 张力组效率数据异常偏高：有效产出135%、开发效率1.83，需复核标准工时口径
+3. 杨远康组过程管控仍弱：计划率64%、按时执行率39%，迭代测试报告缺失
+
+四、积极信号
+1. 张力组从5月SP1低谷（54）反弹至全组第一（94）
+2. 杨远康组健康度56→83（+27），有效产出与BUG比均恢复达标，回顾会已召开
+3. 刘一组BUG比从2.30恢复至0.16，目标达成率100%</div>
+        <div class="iter-teams">
+          <div class="it-card"><div class="it-card-head"><span>刘一</span><span class="chip score score-md">79分↑</span></div><div class="it-analysis">• BUG比2.30→0.16，质量大幅恢复
+• 目标达成率87%→100%
+• 演示回顾会未召开（扣10分）</div></div>
+          <div class="it-card"><div class="it-card-head"><span>张力</span><span class="chip score score-hi">94分↑↑</span></div><div class="it-analysis">• 全组第一，强势反弹+40
+• 需复核：有效产出135%、效率1.83异常偏高
+• 需求变更率35%仍偏高</div></div>
+          <div class="it-card"><div class="it-card-head"><span>龙军</span><span class="chip score score-hi">92分↑</span></div><div class="it-analysis">• 连续保持90+，稳步向好
+• 目标达成率89%→100%，计划率100%
+• 需求变更率50%偏高</div></div>
+          <div class="it-card"><div class="it-card-head"><span>余乐</span><span class="chip na">未参与</span></div><div class="it-analysis">• 投入中电爱华项目调研
+• 张乐、林若飞做项目事务
+• 当期积分记【—】，累计积分不增加</div></div>
+          <div class="it-card"><div class="it-card-head"><span>杨远康</span><span class="chip score score-md">83分↑</span></div><div class="it-analysis">• 显著回升+27，结束连续低位
+• 目标达成率40%→90%（仍未100%）
+• 计划按时率39%、迭代测试报告缺失</div></div>
+          <div class="it-card"><div class="it-card-head"><span>严伟</span><span class="chip score score-md">87分↓</span></div><div class="it-analysis">• 轻微回落-5，BUG比0.19仍接近零缺陷
+• 开发效率1.45、有效产出81%改善
+• 需求变更率67%异常</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 关键问题 ── -->
+<section class="section" data-od-id="issues">
+  <div class="sec-head"><h2>关键问题 &amp; 亮点</h2></div>
+  <div class="issues-grid">
+    <div class="issue-card red"><div class="issue-label">持续问题</div><div class="issue-title">EMDM 杨远康组：连续低迷</div><div class="issue-desc">3月SP1:63 → 4月SP1:70 → 4月SP2:57（最低） → 5月SP2:83（回升）<br>目标达成率连续低于70%，计划按时率连续不达标，迭代测试报告缺失，需持续关注过程管控</div></div>
+    <div class="issue-card red"><div class="issue-label">单迭代异常</div><div class="issue-title">刘一组 4月SP2 BUG比 2.30</div><div class="issue-desc">较前两迭代（均为0.03）暴增77倍，导致开发质量项由10分降为0分。5月SP2已恢复至0.16，需复盘根因，防止复发</div></div>
+    <div class="issue-card amber"><div class="issue-label">共性问题</div><div class="issue-title">需求变更率普遍偏高</div><div class="issue-desc">5月SP2报告显示：刘一67%、严伟67%、龙军50%、张力35%，仅杨远康14%达标。反映迭代启动期需求规划稳定性是系统性短板</div></div>
+    <div class="issue-card amber"><div class="issue-label">数据异常</div><div class="issue-title">张力组 5月SP2 效率异常</div><div class="issue-desc">有效产出135%（超过100%）、开发效率1.83，需核查标准工时口径是否正确。若数据无误说明团队效率极高；若口径有误则影响度量可信度</div></div>
+    <div class="issue-card green"><div class="issue-label">持续标杆</div><div class="issue-title">严伟组：稳居全组第一</div><div class="issue-desc">累计积分排名第一，BUG比连续接近零缺陷（3月—、4月0.06/0.08、5月0.19），有效产出始终高位。是团队过程管理的最佳实践参考</div></div>
+    <div class="issue-card green"><div class="issue-label">显著改善</div><div class="issue-title">张力组 &amp; 杨远康组 5月SP2 大幅反弹</div><div class="issue-desc">张力：54→94（+40），全组最高；杨远康：56→83（+27）。两支团队展现出修复能力，5月SP2改善方向正确，需巩固保持</div></div>
+  </div>
+</section>
+
+<footer data-od-id="footer">
+  <span>数据来源：钉钉表格「敏捷迭代健康度」· nodeId: amweZ92PV6v2rP2DUE5zlMN0VxEKBD6p</span>
+  <span>报告生成时间：2026-06-27 · 覆盖 2026年3月—5月（共5轮正式迭代）</span>
+</footer>
+
+</div>
+
+<script>
+function ft(t,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#mt tbody tr').forEach(r=>{
+    r.style.display=(t==='all'||r.dataset.t===t)?'':'none';
+  });
+}
+function toggleIter(h){
+  const body=h.nextElementSibling;
+  const tog=h.querySelector('.iter-toggle');
+  const open=body.classList.toggle('open');
+  tog.textContent=open?'▼ 收起':'▶ 展开';
+}
+function toggleDetail(btn){
+  const body=btn.nextElementSibling;
+  const open=body.classList.toggle('open');
+  btn.textContent=open?'▼ 收起评分规则':'▶ 评分规则详情';
+}
+</script>
+</body>
+</html>

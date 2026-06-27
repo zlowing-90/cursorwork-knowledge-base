@@ -83,33 +83,56 @@ source: 原始来源（钉钉链接/用户粘贴/etc）
 - 普通线性文字内容 → 保持 md，不强制生成 HTML
 
 **输出位置**：
-- 临时/一次性 HTML → `.agent-html/{主题}-{YYYYMMDD}.html`（已加入 .gitignore）
+- 所有 HTML → `.agent-html/{主题}-{YYYYMMDD}.html`（会随工作区一起推送到 GitHub）
 - 长期保留的 HTML（汇报材料、设计文档等）→ 与对应 md 文件同目录，同名 `.html` 后缀
 
 **调用方式**：读取 `.cursor/skills/html-effectiveness/SKILL.md`，按其 Workflow 执行（Step 0→1→2→3→4）。参考模板文件在 `.agent-html/templates/`。
 
-## 第六步：自动推送到 GitHub
+## 第六步：推送工作区全部内容到 GitHub
 
-文档写入知识库、INDEX.md 更新完毕后，**必须**执行以下 git 操作将变更同步到 GitHub：
+每次生成任何产物（md 文档、HTML、索引更新、技能变更等）后，**必须**执行以下命令将**工作区全部变更**同步到 GitHub：
 
 ```powershell
 cd e:\cursorwork
 git add .
-git commit -m "docs: 新增/更新知识文档 - {文档标题简述}"
+git commit -m "{前缀}: {本次变更的简述}"
 git push
 ```
 
-**提交信息规范**（根据文档类型选择前缀）：
+**`git add .` 覆盖范围**（工作区内所有未被 .gitignore 排除的内容均会提交）：
 
-| 文档类型 | commit 前缀 | 示例 |
+| 目录/文件 | 说明 |
+|-----------|------|
+| `knowledge-base/` | 知识库 md 文档 + 索引 |
+| `dingtalk-docs/` | 钉钉文档同步内容 |
+| `.agent-html/` | AI 生成的 HTML 可视化产物（含模板） |
+| `.cursor/skills/` | 技能文件（SKILL.md 等） |
+| `.cursor/rules/` | 规则文件 |
+| `.cursor/hooks/` | Hook 脚本 |
+| `.cursor/mcp.example.json` | MCP 配置模板（无敏感信息） |
+| `.gitignore` / `README.md` | 工程配置文件 |
+
+> ⚠️ **唯一排除项**：`.cursor/mcp.json`（含真实 API Key/Token）已在 `.gitignore` 中排除，永远不会提交。
+
+**提交信息规范**（根据本次变更类型选择前缀）：
+
+| 变更类型 | commit 前缀 | 示例 |
 |----------|------------|------|
-| 新增文档 | `docs: 新增` | `docs: 新增 钉钉MCP使用指南提炼` |
+| 新增 md 文档 | `docs: 新增` | `docs: 新增 钉钉MCP使用指南提炼` |
 | 更新已有文档 | `docs: 更新` | `docs: 更新 INDEX.md 索引` |
+| 新增/更新 HTML | `html: ` | `html: 敏捷迭代健康度-20260627` |
+| 钉钉文档同步 | `sync: ` | `sync: 钉钉文档 MCP使用指南 v1.2` |
 | 新增决策记录 | `adr: ` | `adr: ADR-001 选择钉钉MCP方案` |
 | 会议记录 | `meeting: ` | `meeting: 2026-06-27 周会纪要` |
-| 钉钉文档同步 | `sync: ` | `sync: 钉钉文档 MCP使用指南 v1.2` |
+| 技能/规则更新 | `skill: ` | `skill: 更新 knowledge-extract 推送规范` |
+| 多类型混合 | `chore: ` | `chore: 新增文档 + HTML + 更新索引` |
 
-> ⚠️ **注意**：`.cursor/mcp.json` 已在 `.gitignore` 中排除，不会被提交，敏感 key 不会泄漏。
+**多产物一次提交**：同一次对话产生了 md + HTML + 索引更新，合并为一条 commit，不需要分开推送：
+```powershell
+git add .
+git commit -m "chore: 敏捷迭代健康度分析 - md提炼+HTML可视化+索引更新"
+git push
+```
 
 ## 避坑清单
 

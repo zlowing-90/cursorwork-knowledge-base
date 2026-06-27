@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Effectiveness - 模式展示</title>
+    <style>
+        :root {
+            --bg: #FAF9F5;
+            --surface: #FFFFFF;
+            --fg: #141413;
+            --muted: #87867F;
+            --border: #D1CFC5;
+            --accent: #D97757;
+            --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+            --fg-soft: color-mix(in oklch, var(--fg) 6%, transparent);
+            --font-display: 'Iowan Old Style', 'Charter', Georgia, 'Times New Roman', serif;
+            --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+            --radius-panel: 12px;
+            --radius-row: 8px;
+            --radius-pill: 999px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+        .page { max-width: 1200px; margin: 0 auto; padding: 56px 24px 96px; }
+        h1 { font-family: var(--font-display); font-size: clamp(44px, 6vw, 76px); font-weight: 500; letter-spacing: -0.02em; margin: 0 0 16px; }
+        h2 { font-family: var(--font-display); font-size: clamp(32px, 4vw, 48px); font-weight: 500; letter-spacing: -0.015em; margin: 64px 0 24px; }
+        h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin: 32px 0 12px; }
+        .subtitle { color: var(--muted); font-size: 18px; margin-bottom: 48px; }
+        .pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-top: 32px; }
+        .pattern-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-panel);
+            padding: 28px;
+            transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+        .pattern-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20,20,19,.10);
+            border-color: var(--fg);
+        }
+        .pattern-card .number {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .pattern-card h3 { margin: 0 0 8px; font-size: 20px; }
+        .pattern-card p { color: var(--muted); font-size: 14px; margin: 0; }
+        .demo-section {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-panel);
+            padding: 32px;
+            margin-top: 24px;
+        }
+        .approaches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 920px) { .approaches { grid-template-columns: 1fr; } }
+        .approach {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-row);
+            padding: 20px;
+        }
+        .approach.recommended { border-color: var(--fg); }
+        .badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border-radius: var(--radius-pill);
+            background: var(--bg);
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .badge.recommended { background: var(--fg); color: var(--bg); }
+        .diff-block {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-row);
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        .diff-line {
+            display: flex;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 2px 16px;
+        }
+        .diff-line.add { background: #F0F7EC; border-left: 3px solid #788C5D; }
+        .diff-line.del { background: #FDF2F0; border-left: 3px solid #B04A3F; }
+        .health {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            background: #E8F0E0;
+            color: #788C5D;
+        }
+        .health::before {
+            content: "";
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #788C5D;
+        }
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .metric {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-row);
+            padding: 20px;
+        }
+        .metric .value {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        .metric .delta { font-family: var(--font-mono); font-size: 13px; color: #788C5D; }
+        .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+        .swatch { border-radius: var(--radius-row); overflow: hidden; border: 1.5px solid var(--border); }
+        .swatch .color { height: 60px; }
+        .swatch .label { padding: 8px; font-family: var(--font-mono); font-size: 11px; background: var(--surface); }
+        .cta {
+            display: inline-block;
+            background: var(--fg);
+            color: var(--bg);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 12px 24px;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            margin-top: 32px;
+            transition: transform 150ms ease;
+        }
+        .cta:hover { transform: translateY(-2px); }
+        footer { margin-top: 96px; padding-top: 32px; border-top: 1.5px solid var(--border); color: var(--muted); font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1>HTML Effectiveness</h1>
+        <p class="subtitle">11 种模式，将 AI 输出转化为人们真正会阅读的可视化文档</p>
+
+        <h2>模式目录</h2>
+        <div class="pattern-grid">
+            <div class="pattern-card">
+                <div class="number">01</div>
+                <h3>并排对比</h3>
+                <p>在网格布局中对比方案、设计或选项，突出推荐项。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">02</div>
+                <h3>代码审查</h3>
+                <p>带颜色标记的代码变更、严重性标签和边注。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">03</div>
+                <h3>架构图</h3>
+                <p>SVG 方框、箭头和交互式工具提示的架构图。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">04</div>
+                <h3>设计系统</h3>
+                <p>色板、字体层级、间距令牌和组件目录。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">05</div>
+                <h3>幻灯片</h3>
+                <p>全视口演示，支持滚动吸附、键盘导航、演讲者模式和 36 套主题。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">06</div>
+                <h3>交互式讲解</h3>
+                <p>通过可折叠章节、标签页代码和实时演示来教学概念。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">07</div>
+                <h3>状态报告</h3>
+                <p>周报，包含健康状态标签、迷你图表和风险表。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">08</div>
+                <h3>流程图</h3>
+                <p>可点击节点、详情面板和 SVG 路径的流程图。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">09</div>
+                <h3>SVG 插图</h3>
+                <p>自包含图形，使用可复用的 CSS 描边和填充类。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">10</div>
+                <h3>自定义编辑器</h3>
+                <p>看板，支持拖拽、切换开关和导出功能。</p>
+            </div>
+            <div class="pattern-card">
+                <div class="number">11</div>
+                <h3>仪表盘</h3>
+                <p>指标和 KPI，包含迷你图、增量指示器和颜色编码状态。</p>
+            </div>
+            <div class="pattern-card" style="border-color: var(--accent);">
+                <div class="number" style="color: var(--accent);">12 ✦ 新增</div>
+                <h3>实时工件</h3>
+                <p>可刷新仪表盘，支持模板+数据结构、自动刷新和实时数据绑定。</p>
+            </div>
+            <div class="pattern-card" style="border-color: var(--accent);">
+                <div class="number" style="color: var(--accent);">13 ✦ 新增</div>
+                <h3>视觉特效</h3>
+                <p>视觉时刻 — 故障标题、液态背景、漏光效果和戏剧性英雄区。</p>
+            </div>
+        </div>
+
+        <h2>实时演示</h2>
+
+        <h3>模式 1：并排对比</h3>
+        <div class="demo-section">
+            <div class="approaches">
+                <div class="approach">
+                    <span class="badge">方案 A</span>
+                    <h3>客户端渲染</h3>
+                    <ul><li>导航快</li><li>交互丰富</li></ul>
+                </div>
+                <div class="approach recommended">
+                    <span class="badge recommended">推荐</span>
+                    <h3>静态生成</h3>
+                    <ul><li>加载快</li><li>SEO 好</li><li>成本低</li></ul>
+                </div>
+                <div class="approach">
+                    <span class="badge">方案 C</span>
+                    <h3>服务端组件</h3>
+                    <ul><li>两者兼顾</li><li>流式传输</li></ul>
+                </div>
+            </div>
+        </div>
+
+        <h3>模式 2：代码审查</h3>
+        <div class="demo-section">
+            <div class="diff-block">
+                <div class="diff-line del"><span style="color:var(--muted);width:40px;display:inline-block;text-align:right;padding-right:12px;">10</span>- const token = jwt.sign(payload, secret)</div>
+                <div class="diff-line add"><span style="color:var(--muted);width:40px;display:inline-block;text-align:right;padding-right:12px;">10</span>+ const token = jwt.sign(payload, secret, { expiresIn: '1h' })</div>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;background:#B04A3F;color:#fff;padding:2px 8px;border-radius:999px;">严重</span>
+            <span style="margin-left:8px;">缺少 TTL — 安全风险</span>
+        </div>
+
+        <h3>模式 4：设计系统</h3>
+        <div class="demo-section">
+            <div class="swatch-grid">
+                <div class="swatch"><div class="color" style="background:#D97757"></div><div class="label">--clay</div></div>
+                <div class="swatch"><div class="color" style="background:#788C5D"></div><div class="label">--olive</div></div>
+                <div class="swatch"><div class="color" style="background:#B04A3F"></div><div class="label">--rust</div></div>
+                <div class="swatch"><div class="color" style="background:#E3DACC"></div><div class="label">--oat</div></div>
+                <div class="swatch"><div class="color" style="background:#6A8CAF"></div><div class="label">--sky</div></div>
+                <div class="swatch"><div class="color" style="background:#141413"></div><div class="label">--slate</div></div>
+            </div>
+        </div>
+
+        <h3>模式 7：状态报告</h3>
+        <div class="demo-section">
+            <span class="health">正常</span>
+            <div style="margin-top:16px;display:flex;align-items:flex-end;gap:8px;height:80px;">
+                <div style="flex:1;background:#788C5D;border-radius:4px 4px 0 0;height:80%"></div>
+                <div style="flex:1;background:#788C5D;border-radius:4px 4px 0 0;height:60%"></div>
+                <div style="flex:1;background:#D97757;border-radius:4px 4px 0 0;height:40%"></div>
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:20%"></div>
+            </div>
+        </div>
+
+        <h3>模式 11：仪表盘</h3>
+        <div class="demo-section">
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="value">12.5K</div>
+                    <div class="delta">↑ 12%</div>
+                </div>
+                <div class="metric">
+                    <div class="value">98.2%</div>
+                    <div class="delta">↑ 0.5%</div>
+                </div>
+                <div class="metric">
+                    <div class="value">¥42K</div>
+                    <div class="delta" style="color:#B04A3F">↓ 3%</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>模式 12：实时工件仪表盘</h3>
+        <div class="demo-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--muted);">实时指标</span>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--olive);display:flex;align-items:center;gap:6px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:var(--olive);"></span> 实时
+                </span>
+            </div>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;">月收入</div>
+                    <div class="value">¥128K</div>
+                    <div class="delta">↑ 12.4%</div>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:24px;margin-top:12px;">
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:40%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:55%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:45%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:70%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:60%"></div>
+                        <div style="flex:1;background:var(--accent);border-radius:2px;height:80%"></div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <div style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;">活跃用户</div>
+                    <div class="value">8.2K</div>
+                    <div class="delta">↑ 3.2%</div>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:24px;margin-top:12px;">
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:60%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:65%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:62%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:70%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:68%"></div>
+                        <div style="flex:1;background:var(--accent);border-radius:2px;height:75%"></div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <div style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;">流失率</div>
+                    <div class="value">2.1%</div>
+                    <div class="delta" style="color:var(--olive)">↓ 0.3%</div>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:24px;margin-top:12px;">
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:80%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:75%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:78%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:70%"></div>
+                        <div style="flex:1;background:var(--accent-soft);border-radius:2px;height:72%"></div>
+                        <div style="flex:1;background:var(--accent);border-radius:2px;height:65%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>模式 13：视觉特效 — 故障标题</h3>
+        <div class="demo-section" style="text-align:center;padding:60px 32px;position:relative;overflow:hidden;">
+            <div style="position:absolute;width:140%;height:140%;top:-20%;left:-20%;background:linear-gradient(135deg, var(--accent), #788C5D, var(--clay));opacity:0.1;border-radius:60% 40% 30% 70% / 60% 30% 70% 40%;z-index:0;"></div>
+            <div style="position:relative;z-index:1;">
+                <div style="font-family:var(--font-display);font-size:clamp(32px,5vw,56px);font-weight:700;letter-spacing:-0.03em;margin-bottom:16px;color:var(--fg);">
+                    <span style="position:relative;display:inline-block;">
+                        视觉时刻
+                        <span style="position:absolute;top:0;left:0;width:100%;height:100%;color:#ff6b6b;z-index:-1;clip-path:inset(20% 0 60% 0);transform:translate(-2px,2px);">视觉时刻</span>
+                        <span style="position:absolute;top:0;left:0;width:100%;height:100%;color:#4ecdc4;z-index:-2;clip-path:inset(60% 0 20% 0);transform:translate(2px,-2px);">视觉时刻</span>
+                    </span>
+                </div>
+                <p style="color:var(--muted);font-size:16px;margin:0;">每页一个戏剧性时刻 — 故障、液态、漏光</p>
+            </div>
+        </div>
+
+        <a href="https://github.com/YardonYan/html-skill-effectiveness" class="cta">在 GitHub 上查看</a>
+
+        <footer>
+            <p>html-effectiveness v2.1 — 基于 <a href="https://github.com/ThariqS/html-effectiveness">html-effectiveness</a>、<a href="https://github.com/anthropics/skills/tree/main/skills/frontend-design">frontend-design</a> 和 <a href="https://github.com/opendesign">open-design</a></p>
+        </footer>
+    </div>
+</body>
+</html>
