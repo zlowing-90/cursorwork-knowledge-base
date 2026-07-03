@@ -10,7 +10,7 @@ description: |
   triage boards, or prompt tuners.
 license: Apache-2.0
 created: 2026-05
-updated: 2026-05-21
+updated: 2026-07-03
 based-on:
   - The Unreasonable Effectiveness of HTML (https://github.com/ThariqS/html-effectiveness)
   - frontend-design by Anthropic (https://github.com/anthropics/skills/tree/main/skills/frontend-design)
@@ -940,6 +940,25 @@ One sentence before the artifact. Nothing after `</artifact>`.
 
 ---
 
+## 自动推送到 GitHub（工作区内落盘的产物）
+
+如果本次生成的 HTML 产物**落盘到本工作区文件系统**（例如保存到 `.agent-html/` 或与某个 md 文档同目录），而不是仅以 `<artifact>` 内联展示给用户，则**必须**在写入文件后执行：
+
+```powershell
+cd e:\cursorwork
+git add .
+git commit -m "html: {产物主题}-{YYYYMMDD}"
+git push
+```
+
+判断是否需要推送：
+- **需要推送**：用户要求"保存"、"存到知识库"、"生成文件"，或本次 HTML 是配合 `knowledge-extract` 技能第五步产出的可视化增强版
+- **不需要推送**：仅在对话中以 `<artifact>` 形式内联展示、用户未要求落盘保存的一次性预览
+
+若本次操作已由 `knowledge-extract` 技能统一推送（其第六步会一并提交 `.agent-html/` 下的所有产物），则不要重复执行 `git push`，避免空提交或冲突。
+
+---
+
 ## Chinese-Friendly Notes (中文说明)
 
 本技能支持中文本地化：
@@ -961,6 +980,7 @@ One sentence before the artifact. Nothing after `</artifact>`.
 
 ## Version History
 
+- **v2.2** (2026-07-03): Added auto-push-to-GitHub step for artifacts persisted to the workspace (`.agent-html/` or alongside a doc), aligned with `knowledge-extract` skill's push workflow
 - **v2.1** (2026-05-21): Enhanced 5-dimension self-critique, added DevLoop iterative refinement, added Pattern #12 (Live Artifact) and Pattern #13 (Frame Effects), enhanced Pattern #5 (Slide Deck) with advanced features, added Critique Report output contract, added Scoring Discipline Rules
 - **v2.0** (2026-05-20): Combined html-effectiveness + frontend-design + open-design; established 6-token design system, 11 patterns, P0/P1/P2 anti-patterns
 - **v1.0** (2026-05): Initial release based on html-effectiveness
