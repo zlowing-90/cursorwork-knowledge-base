@@ -2,6 +2,7 @@
 title: 厦门华尔达_EMAN与金蝶云星空系统集成_接口详细设计
 category: projects
 date: 2026-07-03
+author: zhangli
 tags: [EMAN, 金蝶云星空, ERP集成, 接口设计]
 source: https://alidocs.dingtalk.com/i/nodes/m9bN7RYPWdlGonGyIorOEpY2WZd1wyK0
 status: active

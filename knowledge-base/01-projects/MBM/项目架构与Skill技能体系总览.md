@@ -2,6 +2,7 @@
 title: MBM-Backend项目架构与Skill技能体系总览
 category: projects
 date: 2026-07-02
+author: zhangli
 tags: [MBM, DDD, 低代码, Agent Skill, 模块化单体, Spring Boot]
 source: MBM-Backend（eman-mbm-parent）仓库人工梳理
 status: active

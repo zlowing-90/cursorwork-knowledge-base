@@ -2,6 +2,7 @@
 title: 钉钉 MCP 与 Cursor 双向打通实践
 category: topics
 date: 2026-06-27
+author: zhangli
 tags: [MCP, 钉钉文档, 钉钉表格, Cursor, AI提效, 工具集成]
 extract-method: 金字塔原理
 source: https://alidocs.dingtalk.com/i/nodes/YQBnd5ExVEwxPRxjU2ZB1meL8yeZqMmz

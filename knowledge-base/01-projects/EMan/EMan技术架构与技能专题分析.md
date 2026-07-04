@@ -2,6 +2,7 @@
 title: EMan技术架构与技能专题分析
 category: projects
 date: 2026-07-02
+author: zhangli
 tags: [EMan, MES, 技术架构, Spring Boot, Agent Skill, 模具制造]
 source: e:\yxworkspace\nem-release2.0-master 代码只读分析
 status: active
