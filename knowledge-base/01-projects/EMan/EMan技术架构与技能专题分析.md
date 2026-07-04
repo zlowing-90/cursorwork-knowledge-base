@@ -1,3 +1,12 @@
+---
+title: EMan技术架构与技能专题分析
+category: projects
+date: 2026-07-02
+tags: [EMan, MES, 技术架构, Spring Boot, Agent Skill, 模具制造]
+source: e:\yxworkspace\nem-release2.0-master 代码只读分析
+status: active
+---
+
 # EMan（益模制造执行系统）技术架构与「技能」专题分析报告
 
 > 分析对象：`e:\yxworkspace\nem-release2.0-master`

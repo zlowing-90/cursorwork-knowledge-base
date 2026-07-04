@@ -1,3 +1,12 @@
+---
+title: MBM-Backend项目架构与Skill技能体系总览
+category: projects
+date: 2026-07-02
+tags: [MBM, DDD, 低代码, Agent Skill, 模块化单体, Spring Boot]
+source: MBM-Backend（eman-mbm-parent）仓库人工梳理
+status: active
+---
+
 # MBM-Backend 项目架构与 Skill 技能体系总览
 
 > 本文档为一次性人工梳理产物，汇总项目技术架构与 `.cursor/skills/` + `.agents/skills/` 下全部 Agent Skill 的用途、触发方式与关键约束，供团队快速查阅"有哪些能力可用、什么时候用哪个"。

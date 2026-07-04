@@ -17,7 +17,7 @@ function Get-FrontMatter {
     if ($lines.Count -gt 0 -and $lines[0] -eq "---") {
         $i = 1
         while ($i -lt $lines.Count -and $lines[$i] -ne "---") {
-            if ($lines[$i] -match "^(\w+):\s*(.+)$") {
+            if ($lines[$i] -match "^([\w-]+):\s*(.+)$") {
                 $fm[$Matches[1]] = $Matches[2].Trim()
             }
             $i++
