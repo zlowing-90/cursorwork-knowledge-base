@@ -13,8 +13,12 @@ $IndexFile = Join-Path $KbRoot "00-index\INDEX.md"
 function Get-FrontMatter {
     param([string]$FilePath)
     $lines = Get-Content $FilePath -Encoding UTF8 -ErrorAction SilentlyContinue
+    if ($lines.Count -gt 0) {
+        # 去除 UTF-8 BOM 可能残留在首行开头的字符，避免误判无 front matter
+        $lines[0] = $lines[0].TrimStart([char]0xFEFF)
+    }
     $fm = @{}
-    if ($lines.Count -gt 0 -and $lines[0] -eq "---") {
+    if ($lines.Count -gt 0 -and $lines[0].Trim() -eq "---") {
         $i = 1
         while ($i -lt $lines.Count -and $lines[$i] -ne "---") {
             if ($lines[$i] -match "^([\w-]+):\s*(.+)$") {
@@ -80,11 +84,13 @@ Get-ChildItem "$KbRoot\04-decisions" -Filter "*.md" -ErrorAction SilentlyContinu
 }
 $decisions = $decisions | Sort-Object Num
 
-# 05-references
-Get-ChildItem "$KbRoot\05-references" -Filter "*.md" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "^_" } | ForEach-Object {
+# 05-references（支持按领域分子目录，如 文学阅读/、企业调研/，根目录文件归为"综合"）
+Get-ChildItem "$KbRoot\05-references" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "^_" } | ForEach-Object {
     $rel = $_.FullName.Replace($Root + "\", "").Replace("\", "/")
     $fm = Get-FrontMatter $_.FullName
-    $references += [PSCustomObject]@{ Title = $fm["title"]; Path = $rel; Date = $fm["date"] }
+    $domain = $_.Directory.Name
+    if ($_.Directory.FullName -eq "$KbRoot\05-references") { $domain = "综合" }
+    $references += [PSCustomObject]@{ Domain = $domain; Title = $fm["title"]; Path = $rel; Date = $fm["date"] }
 }
 
 # dingtalk-docs
@@ -164,13 +170,13 @@ $null = $sb.AppendLine("")
 # References
 $null = $sb.AppendLine("## 参考资料 (05-references)")
 $null = $sb.AppendLine("")
-$null = $sb.AppendLine("| 标题 | 文件 | 日期 |")
-$null = $sb.AppendLine("|------|------|------|")
+$null = $sb.AppendLine("| 领域 | 标题 | 文件 | 日期 |")
+$null = $sb.AppendLine("|------|------|------|------|")
 if ($references.Count -eq 0) {
-    $null = $sb.AppendLine("| *(待添加)* | | |")
+    $null = $sb.AppendLine("| *(待添加)* | | | |")
 } else {
     foreach ($r in $references) {
-        $null = $sb.AppendLine("| [$($r.Title)]($($r.Path)) | ``$([System.IO.Path]::GetFileName($r.Path))`` | $($r.Date) |")
+        $null = $sb.AppendLine("| $($r.Domain) | [$($r.Title)]($($r.Path)) | ``$([System.IO.Path]::GetFileName($r.Path))`` | $($r.Date) |")
     }
 }
 $null = $sb.AppendLine("")

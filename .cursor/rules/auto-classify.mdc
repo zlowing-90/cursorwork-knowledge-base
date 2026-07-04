@@ -15,8 +15,12 @@ alwaysApply: true
 | 技术方案、架构、原理、规范、最佳实践 | 专题知识 | `knowledge-base/02-topics/{领域}/` | `{主题}.md` |
 | 会议、会议纪要、周会、评审、讨论记录 | 会议记录 | `knowledge-base/03-meetings/` | `YYYY-MM-DD-{主题}.md` |
 | 决策、选型、方案对比、为什么选择 | 决策记录 | `knowledge-base/04-decisions/` | `ADR-{三位数编号}-{标题}.md` |
-| 外部链接、参考文档、资料汇总 | 参考资料 | `knowledge-base/05-references/` | `{主题}.md` |
+| 小说、书籍、影视、书单、读书笔记等文学/文化类内容 | 参考资料 - 文学阅读 | `knowledge-base/05-references/文学阅读/` | `{书名/主题}.md` |
+| 企业调研、行业分析等商业类资料 | 参考资料 - 企业调研 | `knowledge-base/05-references/企业调研/` | `{主题}.md` |
+| 其他外部链接、参考文档、资料汇总（无明确领域） | 参考资料 - 综合 | `knowledge-base/05-references/` | `{主题}.md` |
 | 来自钉钉文档 / 钉钉链接 | 钉钉文档 | `dingtalk-docs/{空间名}/` | `{文档标题}.md` |
+
+**参考资料分领域说明**：与"专题知识"（`02-topics/{领域}/`）、"项目文档"（`01-projects/{项目名}/`）保持一致的组织方式，`05-references/` 下按领域再分子目录，避免不同性质的资料（如文学书评 vs 企业调研）混杂在同一层级。新增领域时，先检查是否已有相近子目录可复用，没有再新建。
 
 **无法确定时**：先存到 `knowledge-base/05-references/`，文件顶部标注 `status: 待分类`。
 
