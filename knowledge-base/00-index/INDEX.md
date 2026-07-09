@@ -17,6 +17,7 @@
 |------|------|----------|
 | AI工具 | [钉钉MCP与Cursor双向打通实践](knowledge-base/02-topics/AI工具/钉钉MCP与Cursor双向打通实践.md) | 2026-06-27 |
 | 提炼总结 | [思维模型与方法论](knowledge-base/02-topics/提炼总结/思维模型与方法论.md) | 2026-06-27 |
+| DevOps | [EMan研发交付流水线与基础设施总览](knowledge-base/02-topics/DevOps/EMan研发交付流水线与基础设施总览.md) | 2026-07-09 |
 
 ## 会议记录 (03-meetings)
 
