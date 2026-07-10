@@ -1,6 +1,6 @@
 ﻿# 知识库总索引
 
-> 最后更新：2026-07-05 01:18
+> 最后更新：2026-07-10 19:35
 
 ## 项目文档 (01-projects)
 
@@ -8,6 +8,7 @@
 |------|------|----------|
 | EMan | [EMan技术架构与技能专题分析](knowledge-base/01-projects/EMan/EMan技术架构与技能专题分析.md) | 2026-07-02 |
 | MBM | [MBM-Backend项目架构与Skill技能体系总览](knowledge-base/01-projects/MBM/项目架构与Skill技能体系总览.md) | 2026-07-02 |
+| MBM | [MBM产品线2026年Q2发版说明汇总（MBM模具行业包/EAdjust智能调机/MBM630零部件）](knowledge-base/01-projects/MBM/2026Q2发版说明汇总.md) | 2026-07-10 |
 | 厦门华尔达 | [EMAN与金蝶云星空系统集成_接口详细设计](knowledge-base/01-projects/厦门华尔达/EMAN与金蝶云星空系统集成_接口详细设计.md) | 2026-07-03 |
 | 厦门华尔达 | [接口设计核心提炼与风险清单（金字塔原理）](knowledge-base/01-projects/厦门华尔达/接口设计核心提炼与风险清单.md) | 2026-07-03 |
 
